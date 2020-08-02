@@ -1,4 +1,5 @@
 ﻿using BeatSaberCustomCampaigns;
+using BeatSaberCustomCampaigns.campaign;
 using HarmonyLib;
 using SongCore;
 using System;
@@ -31,7 +32,8 @@ namespace CustomCampaignLeaderboardAcc.HarmonyPatches
                     return;
                 }
                 var levelDifficultyBeatmapSets = beatmapLevel.beatmapLevelData.difficultyBeatmapSets;
-                var levelDifficultyBeatmaps = levelDifficultyBeatmapSets[0].difficultyBeatmaps;
+                var missionData = ___lastClicked.GetMissionData(new Campaign()); // campaign doesn't matter here
+                var levelDifficultyBeatmaps = levelDifficultyBeatmapSets.First(x => x.beatmapCharacteristic.Equals(missionData.beatmapCharacteristic)).difficultyBeatmaps;
                 foreach (var diff in levelDifficultyBeatmaps)
                 {
                     if (diff.difficulty.Equals(___lastClicked.difficulty))
@@ -47,7 +49,7 @@ namespace CustomCampaignLeaderboardAcc.HarmonyPatches
             }
             catch (Exception e)
             {
-                Logger.log.Debug("Could not load level data");
+                Logger.log.Debug($"Could not load level data: {e}");
                 return;
             }
         }
