@@ -1,6 +1,7 @@
 ﻿using BeatSaberCustomCampaigns;
 using HarmonyLib;
 using SongCore;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -20,31 +21,40 @@ namespace CustomCampaignLeaderboardAcc.HarmonyPatches
             }
 
             int maxScore = 0;
-            var id = ___lastClicked.FindSong().levelID;
-            var beatmapLevel = Loader.BeatmapLevelsModelSO.GetBeatmapLevelIfLoaded(id);
-            if (beatmapLevel == null)
+            try
             {
-                Logger.log.Debug("beatmap level null");
+                var id = ___lastClicked.FindSong().levelID;
+                var beatmapLevel = Loader.BeatmapLevelsModelSO.GetBeatmapLevelIfLoaded(id);
+                if (beatmapLevel == null)
+                {
+                    Logger.log.Debug("beatmap level null");
+                    return;
+                }
+                var levelDifficultyBeatmapSets = beatmapLevel.beatmapLevelData.difficultyBeatmapSets;
+                var levelDifficultyBeatmaps = levelDifficultyBeatmapSets[0].difficultyBeatmaps;
+                foreach (var diff in levelDifficultyBeatmaps)
+                {
+                    if (diff.difficulty.Equals(___lastClicked.difficulty))
+                    {
+                        Logger.log.Debug("Found note count");
+                        var noteCount = diff.beatmapData.notesCount;
+
+                        var modifiers = ___lastClicked.modifiers.GetGameplayModifiers();
+                        var gameplayModifiersModelSO = Resources.FindObjectsOfTypeAll<GameplayModifiersModelSO>().First();
+                        var multiplier = gameplayModifiersModelSO.GetTotalMultiplier(modifiers);
+                        Logger.log.Debug($"Multiplier: {multiplier}");
+                        maxScore = (int)(ScoreModel.MaxRawScoreForNumberOfNotes(noteCount) * multiplier);
+                    }
+                }
+
+                LeaderboardAcc.GiveParams(ref ___table, maxScore);
+                Logger.log.Debug($"Max Score: {maxScore}");
+            }
+            catch (Exception e)
+            {
+                Logger.log.Debug("Could not load level data");
                 return;
             }
-            var levelDifficultyBeatmapSets = beatmapLevel.beatmapLevelData.difficultyBeatmapSets;
-            var levelDifficultyBeatmaps = levelDifficultyBeatmapSets[0].difficultyBeatmaps;
-            foreach (var diff in levelDifficultyBeatmaps)
-            {
-                if (diff.difficulty.Equals(___lastClicked.difficulty))
-                {
-                    Logger.log.Debug("Found note count");
-                    var noteCount = diff.beatmapData.notesCount;
-
-                    var modifiers = ___lastClicked.modifiers.GetGameplayModifiers();
-                    var gameplayModifiersModelSO = Resources.FindObjectsOfTypeAll<GameplayModifiersModelSO>().First();
-                    var multiplier = gameplayModifiersModelSO.GetTotalMultiplier(modifiers);
-                    maxScore = (int)(ScoreModel.MaxRawScoreForNumberOfNotes(noteCount) * multiplier);
-                }
-            }
-
-            LeaderboardAcc.GiveParams(ref ___table, maxScore);
-            Logger.log.Debug($"Max Score: {maxScore}");
         }
     }
 }
