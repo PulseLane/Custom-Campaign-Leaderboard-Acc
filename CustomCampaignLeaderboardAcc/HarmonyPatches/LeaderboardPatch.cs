@@ -38,12 +38,7 @@ namespace CustomCampaignLeaderboardAcc.HarmonyPatches
                     {
                         Logger.log.Debug("Found note count");
                         var noteCount = diff.beatmapData.notesCount;
-
-                        var modifiers = ___lastClicked.modifiers.GetGameplayModifiers();
-                        var gameplayModifiersModelSO = Resources.FindObjectsOfTypeAll<GameplayModifiersModelSO>().First();
-                        var multiplier = gameplayModifiersModelSO.GetTotalMultiplier(modifiers);
-                        Logger.log.Debug($"Multiplier: {multiplier}");
-                        maxScore = (int)(ScoreModel.MaxRawScoreForNumberOfNotes(noteCount) * multiplier);
+                        maxScore = ScoreModel.MaxRawScoreForNumberOfNotes(noteCount);
                     }
                 }
 
