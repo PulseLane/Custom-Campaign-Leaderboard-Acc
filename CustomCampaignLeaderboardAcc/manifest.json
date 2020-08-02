@@ -3,7 +3,7 @@
   "id": "CustomCampaignLeaderboardAcc",
   "name": "CustomCampaignLeaderboardAcc",
   "author": "PulseLane",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shows accuracy next to score on the leaderboards for custom campaigns",
   "gameVersion": "1.10.0",
   "dependsOn": {
