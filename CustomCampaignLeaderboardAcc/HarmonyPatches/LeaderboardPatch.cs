@@ -14,13 +14,6 @@ namespace CustomCampaignLeaderboardAcc.HarmonyPatches
     {
         static void Postfix(CampaignChallengeLeaderboardViewController __instance, ref LeaderboardTableView ___table, ref Challenge ___lastClicked)
         {
-            // Can't get data, skip execution
-            if (!SongDataCore.Plugin.Songs.IsDataAvailable())
-            {
-                Logger.log.Debug("SongDataCore data not available");
-                return;
-            }
-
             int maxScore = 0;
             try
             {
