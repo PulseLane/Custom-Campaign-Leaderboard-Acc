@@ -2,5 +2,4 @@
 
 Shows the accuracy next to the score on custom campaign leaderboards.
 
-# Known Bugs
-* Having a sufficiently low total score will make (useless) accuracy show on total leaderbaord when backing out of a campaign.
+This plugin is obsolete as of Custom Campaigns v2.11.0 as the feature has been added directly to that plugin.
